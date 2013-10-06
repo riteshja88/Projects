@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <bits/time.h>
+
+#define SEGMENT_SIZE 4*1024*1024
+#define SIZE 1024
+#define MAX_REQ 1000
+
+int main(int argc, char **argv) {
+	FILE *fp=fopen("/dev/rvd","rw+b");
+	char buffer[SIZE]="Hello";
+	
+	int req_cnt=0;
+	int block_no;
+
+//	clock_t start_time,end_time;	
+	time_t start_time,end_time;	
+	if(fp==NULL)
+	{
+		printf("Failed to open file\n");
+		return -1;
+	}
+	
+//	fseek(fp,4*1024*1024,SEEK_SET);
+//	fread(buffer,1,1024,fp);
+
+	start_time=time(&start_time);
+
+	while(req_cnt < MAX_REQ )
+	{
+		block_no = rand() % 6142;
+		
+		fseek(fp,block_no * SEGMENT_SIZE + 1,SEEK_SET);
+		fread(buffer,1,SIZE,fp);
+//		fwrite(buffer,1,SIZE,fp);
+
+//		printf("\n Segment number : %d",block_no);
+//		printf("\n Initial data %c",*buffer);
+	
+		req_cnt++;
+	}
+
+	end_time=time(&end_time);
+
+	printf("\n Segments read = %d.\n In terms of Seconds : Start time = %10lu End time = %10lu \n",MAX_REQ,(unsigned long)start_time,(unsigned long)end_time);
+	printf("\n Time Taken = %10lu \n",(unsigned long)end_time - (unsigned long)start_time);
+//	printf("\n In terms of Seconds   : Start time = %10lu End time = %10lu",start_time/CLK_TCK,end_time/CLK_TCK);
+	
+	fclose(fp);
+	return 0;
+}
